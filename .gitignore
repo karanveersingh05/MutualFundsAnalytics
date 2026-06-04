@@ -1,0 +1,5 @@
+Intruction.md
+projectfile.md
+*.db
+__pycache__/
+.DS_Store
