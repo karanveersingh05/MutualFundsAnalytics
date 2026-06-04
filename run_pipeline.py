@@ -16,8 +16,6 @@ PIPELINE = [
     'run_eda.py',
     'compute_metrics.py',
     'generate_advanced_analytics.py',
-    'generate_dashboard_mocks.py',
-    'generate_final_docs.py',
 ]
 
 def run_script(name: str) -> None:
@@ -28,7 +26,7 @@ def run_script(name: str) -> None:
     print(f"\n{'='*60}\nRunning {name}...\n{'='*60}")
     result = subprocess.run(
         [sys.executable, str(path)],
-        cwd=str(SCRIPTS_DIR)          # each script resolves paths relative to scripts/
+        cwd=str(SCRIPTS_DIR)   # each script resolves paths via Path(__file__).parent
     )
     if result.returncode != 0:
         print(f"\nERROR in {name} (exit {result.returncode}) — pipeline halted.")
