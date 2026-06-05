@@ -43,7 +43,7 @@ df_var = pd.DataFrame(var_results).merge(df_fund[['amfi_code', 'scheme_name']], 
 df_var.to_csv(processed_dir / 'var_cvar_report.csv', index=False)
 print(f"  VaR computed for {len(df_var)} funds")
 
-# 2. Rolling 90-Day Sharpe — top 5 by scorecard (meaningful selection)
+# 2. Rolling 90-Day Sharpe - top 5 by scorecard (meaningful selection)
 print("Plotting Rolling Sharpe...")
 top_5_codes = (
     df_score.sort_values('scorecard_0_100', ascending=False)
@@ -178,7 +178,7 @@ _md("## 5 Advanced Insights\n"
     "2024-2025 cohorts show higher average per-transaction SIP amounts, indicating a shift "
     "to higher-ticket investors.\n"
     "3. **SIP Continuity**: Of investors with 6+ SIP transactions, the majority have an average "
-    "inter-transaction gap exceeding 35 days — these are flagged 'at-risk' for SIP discontinuation.\n"
+    "inter-transaction gap exceeding 35 days - these are flagged 'at-risk' for SIP discontinuation.\n"
     "4. **Sector Concentration (HHI)**: Sectoral/Thematic equity funds have the highest HHI "
     "scores (>2,000), while Flexi-cap and Index funds are the most diversified.\n"
     "5. **Rolling Sharpe Stability**: The top scorecard funds maintained a consistently positive "

@@ -51,7 +51,7 @@ for code, group in df_nav.groupby('amfi_code'):
 
     end_val   = group['nav'].iloc[-1]
 
-    # CAGR — calendar-day based for accuracy
+    # CAGR - calendar-day based for accuracy
     total_days = (group['date'].iloc[-1] - group['date'].iloc[0]).days
 
     cagr_1y = cagr_3y = cagr_5y = np.nan
@@ -73,7 +73,7 @@ for code, group in df_nav.groupby('amfi_code'):
     std_ret  = group['daily_return'].std()
     sharpe   = (mean_ret - Rf_daily) / std_ret * np.sqrt(252) if std_ret > 0 else 0.0
 
-    # Sortino — downside std only
+    # Sortino - downside std only
     neg_rets     = group[group['daily_return'] < 0]['daily_return']
     downside_std = neg_rets.std()
     sortino      = (mean_ret - Rf_daily) / downside_std * np.sqrt(252) if downside_std > 0 else 0.0
@@ -173,7 +173,7 @@ if len(d_b50):
     ax.plot(d_b50['date'], d_b50['close_rebased'],
             label='NIFTY 50', linestyle=':', color='dimgray', linewidth=2.0)
 
-ax.set_title('Top 5 Funds vs Benchmarks — 3-Year Performance (Rebased to 100)',
+ax.set_title('Top 5 Funds vs Benchmarks - 3-Year Performance (Rebased to 100)',
              fontsize=13, fontweight='bold')
 ax.set_ylabel('Rebased NAV / Index (Base = 100)')
 ax.set_xlabel('Date')

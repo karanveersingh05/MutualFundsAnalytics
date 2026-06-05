@@ -71,7 +71,7 @@ for col in numeric_cols:
 # Validate expense_ratio range
 bad_expense = (df_perf['expense_ratio_pct'] < 0.1) | (df_perf['expense_ratio_pct'] > 2.5)
 if bad_expense.any():
-    print(f"  WARNING: {bad_expense.sum()} schemes have expense_ratio outside 0.1-2.5% — clipping.")
+    print(f"  WARNING: {bad_expense.sum()} schemes have expense_ratio outside 0.1-2.5% - clipping.")
     df_perf['expense_ratio_pct'] = df_perf['expense_ratio_pct'].clip(lower=0.1, upper=2.5)
 df_perf.to_csv(processed_dir / '07_scheme_performance_clean.csv', index=False)
 print(f"  Performance rows: {len(df_perf):,}")

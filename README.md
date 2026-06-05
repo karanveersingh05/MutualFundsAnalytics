@@ -1,6 +1,6 @@
 # Bluestock Mutual Fund Analytics Platform
 
-> **Capstone Project — Bluestock Fintech**
+> **Capstone Project - Bluestock Fintech**
 > End-to-end data engineering and analytics platform for Indian Mutual Funds.
 
 ---
@@ -129,7 +129,7 @@ python scripts/recommender.py --risk High     # Options: Low | Moderate | High
 - **SIP ATH**: Rs 31,002 Cr in December 2025
 - **Folio Growth**: 13.26 Cr (Jan 2022) → 26.12 Cr (Dec 2025)
 - **AUM Leader**: SBI Mutual Fund at Rs 12.5 Lakh Crore
-- **Top Scorecard Fund**: ICICI Pru Midcap — Score: 100/100
+- **Top Scorecard Fund**: ICICI Pru Midcap - Score: 100/100
 - **Best Sharpe**: Mirae Asset Large Cap (Sharpe: 1.07)
 - **Highest HHI (Concentration)**: Axis Bluechip Fund (HHI: 2065)
 
@@ -138,8 +138,8 @@ python scripts/recommender.py --risk High     # Options: Low | Moderate | High
 ## Dashboard
 
 The `dashboard/` directory contains:
-- `bluestock_mf_dashboard.pbix` — Power BI source file
-- `Dashboard.pdf` — 4-page dashboard PDF export
+- `bluestock_mf_dashboard.pbix` - Power BI source file
+- `Dashboard.pdf` - 4-page dashboard PDF export
 - `Page_1_Industry_Overview.png` through `Page_4_SIP_Market_Trends.png`
 
 ---

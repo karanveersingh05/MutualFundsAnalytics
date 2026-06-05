@@ -1,6 +1,6 @@
 """
 run_pipeline.py
-Master execution script — runs the full ETL + analytics pipeline.
+Master execution script - runs the full ETL + analytics pipeline.
 Usage: python run_pipeline.py
 """
 import subprocess
@@ -24,7 +24,7 @@ PIPELINE = [
 def run_script(name: str) -> None:
     path = SCRIPTS_DIR / name
     if not path.exists():
-        print(f"  SKIP — {name} not found")
+        print(f"  SKIP - {name} not found")
         return
     print(f"\n{'='*60}\nRunning {name}...\n{'='*60}")
     result = subprocess.run(
@@ -32,13 +32,13 @@ def run_script(name: str) -> None:
         cwd=str(SCRIPTS_DIR)   # each script resolves paths via Path(__file__).parent
     )
     if result.returncode != 0:
-        print(f"\nERROR in {name} (exit {result.returncode}) — pipeline halted.")
+        print(f"\nERROR in {name} (exit {result.returncode}) - pipeline halted.")
         sys.exit(result.returncode)
     print(f"  {name} DONE")
 
 
 if __name__ == '__main__':
-    print("Bluestock MF Analytics Pipeline — Start")
+    print("Bluestock MF Analytics Pipeline - Start")
     for script in PIPELINE:
         run_script(script)
     print("\nPipeline completed successfully.")

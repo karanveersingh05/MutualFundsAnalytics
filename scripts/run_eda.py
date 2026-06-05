@@ -5,7 +5,7 @@ Generates all EDA charts from cleaned CSVs and saves them to reports/charts/.
 import pandas as pd
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')  # non-interactive backend — prevents GUI popup
+matplotlib.use('Agg')  # non-interactive backend - prevents GUI popup
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
