@@ -8,7 +8,7 @@ import plotly.express as px
 from pathlib import Path
 
 # --- Page Config ---
-st.set_page_config(page_title="Bluestock MF Analytics", page_icon="📈", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Bluestock MF Analytics", layout="wide", initial_sidebar_state="expanded")
 
 # --- Custom Apple-like CSS ---
 st.markdown("""
@@ -98,10 +98,11 @@ def load_data():
 data = load_data()
 
 # --- Sidebar Navigation ---
+st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/e/eb/Apple_logo_black.svg", width=40) # Aesthetic placeholder
 st.sidebar.title("Bluestock MF")
 st.sidebar.markdown("---")
 page = st.sidebar.radio("Navigation", 
-    ["📊 Industry Overview", "📈 Fund Performance", "🧑‍💻 Investor Analytics", "📉 SIP Trends"]
+    ["Industry Overview", "Fund Performance", "Investor Analytics", "SIP Trends"]
 )
 
 st.sidebar.markdown("---")
@@ -111,7 +112,7 @@ if not data:
     st.stop()
 
 # --- Page 1: Industry Overview ---
-if page == "📊 Industry Overview":
+if page == "Industry Overview":
     st.title("Industry Overview")
     st.markdown("Macro-level view of the Indian Mutual Fund Industry.")
     st.markdown("<br>", unsafe_allow_html=True)
@@ -153,7 +154,7 @@ if page == "📊 Industry Overview":
             st.plotly_chart(fig, use_container_width=True)
 
 # --- Page 2: Fund Performance ---
-elif page == "📈 Fund Performance":
+elif page == "Fund Performance":
     st.title("Fund Performance & Risk")
     st.markdown("Compare risk-adjusted returns across the Bluestock universe.")
     st.markdown("<br>", unsafe_allow_html=True)
@@ -181,7 +182,7 @@ elif page == "📈 Fund Performance":
         st.subheader("Risk vs Return (Alpha vs CAGR)")
         # Plotting cagr_3y vs alpha. Size by scorecard_0_100
         fig = px.scatter(filtered_df, x='cagr_3y', y='alpha', 
-                         size='scorecard_0_100', color='category', hover_name='scheme_name_x',
+                         size='scorecard_0_100', color='category', hover_name='scheme_name',
                          labels={'cagr_3y': 'Return (3 Yr CAGR)', 'alpha': 'Alpha (Excess Return)'},
                          color_discrete_sequence=px.colors.qualitative.Bold)
         fig.update_layout(**plotly_layout)
@@ -194,14 +195,14 @@ elif page == "📈 Fund Performance":
         st.subheader("Fund Scorecard Ranking")
         
         # Clean dataframe for display
-        display_df = filtered_df[['scheme_name_x', 'fund_house', 'category', 'scorecard_0_100', 'cagr_3y', 'sharpe', 'alpha']].copy()
+        display_df = filtered_df[['scheme_name', 'fund_house', 'category', 'scorecard_0_100', 'cagr_3y', 'sharpe', 'alpha']].copy()
         display_df.columns = ['Scheme Name', 'AMC', 'Category', 'Score (0-100)', '3Y CAGR', 'Sharpe', 'Alpha']
         display_df = display_df.sort_values('Score (0-100)', ascending=False).reset_index(drop=True)
         
         st.dataframe(display_df, use_container_width=True)
 
 # --- Page 3: Investor Analytics ---
-elif page == "🧑‍💻 Investor Analytics":
+elif page == "Investor Analytics":
     st.title("Investor Analytics")
     st.markdown("Insights into investor behaviour, geography, and transaction types.")
     st.markdown("<br>", unsafe_allow_html=True)
@@ -237,7 +238,7 @@ elif page == "🧑‍💻 Investor Analytics":
         st.plotly_chart(fig, use_container_width=True)
 
 # --- Page 4: SIP & Market Trends ---
-elif page == "📉 SIP Trends":
+elif page == "SIP Trends":
     st.title("SIP & Market Trends")
     st.markdown("Analysing the phenomenal growth of systematic investing in India.")
     st.markdown("<br>", unsafe_allow_html=True)
