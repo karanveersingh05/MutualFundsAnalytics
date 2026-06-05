@@ -126,8 +126,7 @@ page = st.sidebar.radio("Navigation", [
     "Investor Analytics",
     "SIP Trends",
     "Monte Carlo Simulation",
-    "Portfolio Optimization",
-    "Send Report"
+    "Portfolio Optimization"
 ])
 st.sidebar.markdown("---")
 st.sidebar.caption("v1.7 | Bluestock MF Capstone")
@@ -326,7 +325,7 @@ elif page == "Monte Carlo Simulation":
     if chart_path.exists():
         st.markdown("<br>", unsafe_allow_html=True)
         st.subheader("Simulation Chart")
-        st.image(str(chart_path), caption="Monte Carlo NAV Bands (5th / 50th / 95th percentile)", use_column_width=True)
+        st.image(str(chart_path), caption="Monte Carlo NAV Bands (5th / 50th / 95th percentile)", use_container_width=True)
     else:
         st.warning("Chart not found. Please run the pipeline first via run.bat.")
 
@@ -370,111 +369,8 @@ elif page == "Portfolio Optimization":
     if chart_path.exists():
         st.markdown("<br>", unsafe_allow_html=True)
         st.subheader("Efficient Frontier Chart")
-        st.image(str(chart_path), caption="Efficient Frontier: Each dot = one simulated portfolio", use_column_width=True)
+        st.image(str(chart_path), caption="Efficient Frontier: Each dot = one simulated portfolio", use_container_width=True)
     else:
         st.warning("Chart not found. Please run the pipeline first via run.bat.")
 
-# =============================================================================
-# Page 7: Send Report (Task 13 - integrated in the web app)
-# =============================================================================
-elif page == "Send Report":
-    st.title("Weekly Performance Report")
-    st.markdown("Generate and send an automated HTML performance email directly from the dashboard.")
-    st.markdown("<br>", unsafe_allow_html=True)
 
-    # --- HTML preview ---
-    def generate_html_report(data):
-        """Build the HTML email body from current scorecard data."""
-        try:
-            scorecard = data['scorecard']
-            master = data['fund_master']
-            df = pd.merge(scorecard, master[['amfi_code', 'category']], on='amfi_code', how='left')
-            top_5 = df.sort_values('scorecard_0_100', ascending=False).head(5)
-        except Exception as e:
-            return f"<p>Error generating report: {e}</p>"
-
-        date_str = datetime.datetime.now().strftime("%B %d, %Y")
-
-        rows_html = ""
-        for _, row in top_5.iterrows():
-            cagr = round(row.get('cagr_3y', 0) * 100, 2)
-            score = round(row.get('scorecard_0_100', 0), 1)
-            rows_html += f"""
-            <tr>
-              <td style="font-weight:500; color:#007AFF;">{row.get('scheme_name','')}</td>
-              <td>{row.get('category','N/A')}</td>
-              <td>{cagr}%</td>
-              <td style="color:#34C759; font-weight:bold;">{score}/100</td>
-            </tr>"""
-
-        return f"""<html><head>
-        <style>
-          body{{font-family:'Helvetica Neue',Arial,sans-serif;color:#333;background:#F5F5F7;}}
-          .wrap{{max-width:650px;margin:30px auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #eaeaea;}}
-          .hd{{background:#1D1D1F;color:#fff;padding:25px;text-align:center;}}
-          .body{{padding:25px;}}
-          table{{width:100%;border-collapse:collapse;margin-top:15px;}}
-          th,td{{padding:12px;text-align:left;border-bottom:1px solid #E5E5EA;font-size:0.9rem;}}
-          th{{background:#F5F5F7;font-weight:600;color:#86868B;text-transform:uppercase;font-size:0.78rem;letter-spacing:.05em;}}
-          .ft{{padding:15px;text-align:center;font-size:11px;color:#86868B;border-top:1px solid #eaeaea;}}
-        </style></head><body>
-        <div class="wrap">
-          <div class="hd"><h2 style="margin:0;font-size:1.5rem;">BlueStock Mutual Funds Analytics</h2>
-          <p style="margin:5px 0 0;color:#A1A1A6;font-size:.9rem;">Weekly Performance Summary — {date_str}</p></div>
-          <div class="body">
-            <p>Hello,</p>
-            <p>Here are the <strong>Top 5 Funds</strong> by composite score as of {date_str}.</p>
-            <table>
-              <tr><th>Scheme Name</th><th>Category</th><th>3Y CAGR</th><th>Score</th></tr>
-              {rows_html}
-            </table>
-            <p style="margin-top:20px;font-size:.85rem;color:#555;">
-              Scores reflect Sharpe, Alpha, Expense Ratio, and Max Drawdown factors.<br>
-              View the full interactive dashboard via Streamlit.
-            </p>
-          </div>
-          <div class="ft">Automated by BlueStock MF Pipeline |
-            Made by <a href="https://www.linkedin.com/in/karanveersingh05/" style="color:#007AFF;">Karan Veer Singh</a>
-          </div>
-        </div></body></html>"""
-
-    html_content = generate_html_report(data)
-
-    # Preview
-    with st.expander("Preview Email HTML", expanded=True):
-        st.components.v1.html(html_content, height=520, scrolling=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.subheader("Send via Gmail")
-    st.info("Uses Gmail SMTP with an App Password. Generate one at myaccount.google.com > Security > App Passwords.")
-
-    with st.form("email_form"):
-        sender_email = st.text_input("Your Gmail Address", placeholder="you@gmail.com")
-        sender_password = st.text_input("Gmail App Password", type="password", placeholder="16-char app password")
-        receiver_email = st.text_input("Recipient Email", placeholder="recipient@example.com")
-        submitted = st.form_submit_button("Send Report")
-
-    if submitted:
-        if not sender_email or not sender_password or not receiver_email:
-            st.error("All three fields are required.")
-        else:
-            try:
-                msg = MIMEMultipart("alternative")
-                msg["Subject"] = f"BlueStock MF: Weekly Report — {datetime.datetime.now().strftime('%d %b %Y')}"
-                msg["From"] = sender_email
-                msg["To"] = receiver_email
-                msg.attach(MIMEText(html_content, "html"))
-
-                with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-                    server.login(sender_email, sender_password)
-                    server.sendmail(sender_email, receiver_email, msg.as_string())
-
-                # Also save local HTML copy
-                report_path = BASE_DIR / 'reports' / 'weekly_summary.html'
-                report_path.write_text(html_content, encoding='utf-8')
-
-                st.success(f"Report sent successfully to {receiver_email}!")
-            except smtplib.SMTPAuthenticationError:
-                st.error("Authentication failed. Check your Gmail and App Password.")
-            except Exception as e:
-                st.error(f"Failed to send: {e}")
