@@ -18,6 +18,7 @@ PIPELINE = [
     'generate_advanced_analytics.py',
     'monte_carlo_simulation.py',
     'markowitz_optimization.py',
+    'email_report_generator.py',
 ]
 
 def run_script(name: str) -> None:
