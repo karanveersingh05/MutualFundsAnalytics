@@ -81,8 +81,8 @@ plotly_layout = dict(
     margin=dict(l=20, r=20, t=40, b=20),
 )
 
-# --- Paths ---
-BASE_DIR = Path(__file__).parent.parent
+# Base directory for absolute path resolution
+BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / 'data' / 'processed'
 SCRIPTS_DIR = BASE_DIR / 'scripts'
 
@@ -126,7 +126,8 @@ page = st.sidebar.radio("Navigation", [
     "Investor Analytics",
     "SIP Trends",
     "Monte Carlo Simulation",
-    "Portfolio Optimization"
+    "Portfolio Optimization",
+    "About Project"
 ])
 st.sidebar.markdown("---")
 st.sidebar.caption("v1.7 | Bluestock MF Capstone")
@@ -372,5 +373,130 @@ elif page == "Portfolio Optimization":
         st.image(str(chart_path), caption="Efficient Frontier: Each dot = one simulated portfolio", use_container_width=True)
     else:
         st.warning("Chart not found. Please run the pipeline first via run.bat.")
+
+# =============================================================================
+# Page 7: About Project
+# =============================================================================
+elif page == "About Project":
+    st.title("About the Project")
+    st.markdown("A deep dive into the architecture, datasets, and quantitative models powering the **Bluestock Mutual Funds Analytics** platform.")
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    tab1, tab2, tab3, tab4 = st.tabs(["Architecture & ETL", "Datasets & Schema", "Quantitative Models", "Tech Stack"])
+    
+    with tab1:
+        st.subheader("End-to-End Data Pipeline")
+        st.markdown("""
+        The platform operates on a fully automated, 'zero-touch' Python ETL pipeline. 
+        
+        **1. Extraction (Ingestion)**
+        - Ingests **10 raw historical CSVs** containing transaction data, historical NAVs, and fund metadata.
+        - Interfaces with the **Live AMFI API** to download the absolute latest Net Asset Values (NAV) for top tracking funds dynamically.
+        
+        **2. Transformation (Cleaning)**
+        - **Temporal Alignment:** Financial data is inherently messy due to weekends and public holidays. The pipeline reindexes all dates to a complete calendar and utilizes algorithmic **forward-filling (ffill)** to ensure compounding calculations are perfectly accurate.
+        - **Outlier Mitigation:** Regulatory ceilings are applied. For example, any expense ratio exceeding SEBI's 2.5% cap is mathematically clipped to prevent scoring anomalies.
+        
+        **3. Loading (Warehouse)**
+        - The transformed data is pushed into a local **SQLite** database, strictly modeled as a high-performance **Star Schema**.
+        """)
+        
+        with st.expander("View Pipeline Script Execution Order"):
+            st.code('''
+            1. live_nav_fetch.py
+            2. data_ingestion.py
+            3. data_cleaning.py
+            4. run_eda.py
+            5. compute_metrics.py
+            6. generate_advanced_analytics.py
+            7. monte_carlo_simulation.py
+            8. markowitz_optimization.py
+            9. email_report_generator.py
+            ''', language='text')
+
+    with tab2:
+        st.subheader("Data Modeling")
+        st.markdown("""
+        The core relational database (`bluestock_mf.db`) utilizes a **Star Schema** to separate static dimensions from rapidly growing transactional facts.
+        """)
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.info("**Dimension Tables**")
+            st.markdown("""
+            - `dim_fund`: Fund metadata (AMC, Category, Expense Ratio).
+            - `dim_date`: Complete calendar mapped to quarters and weekends.
+            """)
+        with col2:
+            st.success("**Fact Tables**")
+            st.markdown("""
+            - `fact_nav`: 64,000+ daily NAV records.
+            - `fact_transactions`: 32,000+ retail investor records.
+            - `fact_performance`: Calculated Sharpe, Alpha, and composite scores.
+            """)
+            
+        st.markdown("---")
+        st.markdown("**The 10 Core Raw Datasets:**")
+        st.markdown("""
+        1. `01_fund_master.csv` - Reference table: fund house, category, risk grade
+        2. `02_nav_history.csv` - Daily NAV for 40 schemes (2022-2026)
+        3. `03_aum_by_fund_house.csv` - Quarterly AUM by AMC
+        4. `04_monthly_sip_inflows.csv` - Industry SIP inflow data
+        5. `05_category_inflows.csv` - Net fund category inflows by month
+        6. `06_industry_folio_count.csv` - Total folios, equity/debt/hybrid split
+        7. `07_scheme_performance.csv` - Return metrics, Sharpe, Sortino, Alpha, Beta
+        8. `08_investor_transactions.csv` - 32K+ investor SIP/Lumpsum records
+        9. `09_portfolio_holdings.csv` - Stock-level portfolio weights per fund
+        10. `10_benchmark_indices.csv` - Nifty 50, Nifty 100 benchmark data
+        """)
+
+    with tab3:
+        st.subheader("Financial Mathematics & Analytics")
+        st.markdown("The platform leverages institutional-grade models rather than simple absolute returns.")
+        
+        st.markdown("**Core Performance Metrics:**")
+        st.markdown("""
+        - **Sharpe Ratio:** Measures risk-adjusted return (Excess Return / Volatility).
+        - **Sortino Ratio:** Similar to Sharpe, but only penalizes *downside* volatility.
+        - **Alpha & Beta:** Evaluates a fund manager's ability to beat the benchmark index (Nifty 50).
+        - **Maximum Drawdown:** Stress-tests funds by calculating the largest historical peak-to-trough drop.
+        """)
+        
+        st.markdown("**Behavioral & Structural Analytics:**")
+        st.markdown("""
+        - **SIP Continuity Engine:** Scans transaction histories to flag investors whose inter-transaction gaps exceed 35 days (predictive churn analysis).
+        - **Cohort Analysis:** Groups investors by acquisition year to map Lifetime Value (LTV) and average transaction sizes.
+        - **Herfindahl-Hirschman Index (HHI):** Applies macroeconomic concentration mathematics to portfolio holdings to identify funds over-exposed to a single stock.
+        """)
+        
+        st.markdown("**Advanced Quantitative Models:**")
+        with st.expander("1. Monte Carlo Simulations (Stochastic Forecasting)"):
+            st.markdown("""
+            Utilizing **Geometric Brownian Motion (GBM)**, the engine extracts historical drift and volatility for top bluechip funds. 
+            It then simulates 1,000 unique, randomized market paths spanning 1,260 future trading days (5 years) to generate predictive uncertainty bands at the 5th, 50th, and 95th percentiles.
+            """)
+        with st.expander("2. Markowitz Efficient Frontier (Modern Portfolio Theory)"):
+            st.markdown("""
+            The engine simulates 10,000 completely random asset allocations across a diverse 5-fund basket. By mapping Expected Return vs. Expected Risk, it programmatically identifies the **Maximum Sharpe Ratio** portfolio and the **Minimum Volatility** portfolio.
+            """)
+
+    with tab4:
+        st.subheader("Technology Stack")
+        st.markdown("The application is entirely Python-native, guaranteeing cross-platform operability without relying on heavy BI tools.")
+        
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.markdown("**Data Engineering**")
+            st.caption("- Python 3.10+\n- Pandas\n- NumPy\n- SQLite3")
+        with c2:
+            st.markdown("**Data Science & Math**")
+            st.caption("- SciPy\n- Statsmodels\n- Datetime")
+        with c3:
+            st.markdown("**Visualization & UI**")
+            st.caption("- Streamlit\n- Plotly Express\n- Matplotlib\n- Seaborn")
+            
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("**Project Authored By:** Karan Veer Singh")
+        st.markdown("[View on GitHub](https://github.com/karanveersingh05/MutualFundsAnalytics) | [Connect on LinkedIn](https://www.linkedin.com/in/karanveersingh05/)")
 
 
