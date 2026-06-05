@@ -74,4 +74,7 @@ echo    Scorecard : data\processed\fund_scorecard.csv
 echo    VaR report: data\processed\var_cvar_report.csv
 echo ============================================================
 echo.
+echo [Bonus] Launching interactive Streamlit Web App GUI...
+streamlit run dashboard\streamlit_app.py
+
 pause
