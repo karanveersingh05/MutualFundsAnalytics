@@ -1,4 +1,4 @@
-# Bluestock Mutual Funds Analytics Platform
+.# Bluestock Mutual Funds Analytics Platform
 ### Capstone Presentation Content
 
 --------------------------------------------------
@@ -156,6 +156,62 @@ erDiagram
 ## SLIDE 15: Q&A
 **Title:** Thank You
 *   **Developer:** Karan Veer Singh
+*   **Repository:** [github.com/karanveersingh05/MutualFundsAnalytics](https://github.com/karanveersingh05/MutualFundsAnalytics)
+*   **LinkedIn:** [linkedin.com/in/karanveersingh05](https://www.linkedin.com/in/karanveersingh05/)
+*   **Open for Questions.**
+oss a diversified basket of mutual funds.
+*   **The Algorithmic Approach:** Standard retail investors guess their portfolio weightings. To solve this, I built an engine that simulates 10,000 distinct, randomized portfolio weightings across a basket of Large Cap, Mid Cap, Small Cap, and Debt funds.
+*   **Efficient Frontier Construction:** By plotting the Expected Risk against the Expected Return for all 10,000 simulated portfolios, the engine successfully draws the Efficient Frontier curve.
+*   **Key Deliverables & Value:** 
+    *   The algorithm scans the results to identify the exact percentage allocation required to achieve the **Maximum Sharpe Ratio** portfolio.
+    *   It simultaneously locates the **Minimum Volatility** portfolio designed for highly conservative, risk-averse clients.
+
+--------------------------------------------------
+## SLIDE 10: The Streamlit Interactive Dashboard
+**Key Message:** Delivering the heavy analytics engine directly to the end-user through a premium, interactive web interface.
+*   **Apple-Inspired UI/UX Aesthetics:** Completely abandoned clunky BI tools to build a custom Python web app featuring a clean layout, Sans-Serif typography, high-contrast themes, and minimalist metric cards.
+*   **Dynamic, Real-Time Filtering:** Features live, cross-filtering capabilities, allowing users to drill down by specific Asset Management Companies (AMCs) and Fund Categories instantly.
+*   **Comprehensive Modules:** 
+    *   **Macro Industry Overview:** Tracking 80+ lakh crore in AUM.
+    *   **Fund Performance:** Interactive scatter plots mapping Alpha against CAGR.
+    *   **Investor Analytics:** Breaking down the demographics of the SIP surge.
+    *   **Advanced Pages:** Dedicated tabs for the live Monte Carlo and Markowitz visualizations.
+
+--------------------------------------------------
+## SLIDE 11: Pipeline Automation & Reporting
+**Key Message:** Creating a zero-touch, fully automated operational ecosystem that requires absolutely no manual intervention.
+*   **Daemonized Scheduling Logic:** The entire ETL pipeline is programmed to auto-execute. I built a Python background daemon that wakes up every weekday evening, triggers the API data pull, and recompiles the entire database silently.
+*   **Automated HTML Email Engine:** 
+    *   To keep stakeholders informed without them having to log in, I engineered an automated newsletter module utilizing Python's `smtplib`.
+    *   The script automatically queries the newest Composite Scorecard, parses out the Top 5 highest-ranking funds, and injects them into a beautifully styled HTML/CSS email template.
+    *   It then transmits this email silently via SMTP for weekly stakeholder updates.
+
+--------------------------------------------------
+## SLIDE 12: Business Value & Strategic Impact
+**Key Message:** How this comprehensive platform serves the entire ecosystem of financial stakeholders.
+*   **For Retail Investors:** Democratizes access to institutional-grade financial mathematics. What was once restricted to hedge funds (like Alpha, Beta, and Efficient Frontiers) is now available in a free web browser.
+*   **For AMCs and Brokerages:** Provides a predictive churn engine via the SIP continuity analysis, while simultaneously highlighting geographic hotspots for targeted marketing campaigns.
+*   **For Data Analysts:** Fully automates the tedious, error-prone daily task of downloading, cleaning, and aligning NAV data against benchmark indices, freeing them to focus purely on strategy.
+
+--------------------------------------------------
+## SLIDE 13: Technical Challenges Conquered
+**Key Message:** Overcoming the real-world data engineering hurdles that arose during development.
+*   **Missing Weekend NAVs:** Financial markets close on weekends, which severely breaks daily compounding logic. I solved this by mathematically reindexing the time-series arrays and applying forward-fill (`ffill()`) algorithms to ensure continuity.
+*   **Pandas Merge Collisions:** When merging multiple complex datasets, column names often collided resulting in messy `_x` and `_y` suffixes. I resolved this by enforcing strict naming conventions and schema definitions early in the pipeline.
+*   **Headless Matplotlib Generation:** Because the pipeline runs as an automated background cron job, rendering charts caused the GUI threads to crash. I engineered the pipeline to use non-interactive Matplotlib backends (`Agg`), successfully preventing server crashes during automated execution.
+
+--------------------------------------------------
+## SLIDE 14: Conclusion & Future Scope
+**Key Message:** Delivering a highly capable, production-ready V1 platform with massive room to scale.
+*   **Current State:** The project successfully stands as a fully functioning, end-to-end Python financial data product that bridges the gap between raw data and stochastic modeling.
+*   **Future Scope - Cloud Migration:** Transitioning the local SQLite database to an AWS RDS instance, and migrating the ETL daemon to AWS Lambda functions for infinite scalability.
+*   **Future Scope - Machine Learning:** Integration of predictive Deep Learning models (like LSTMs) to forecast short-term NAV movements based on macroeconomic indicators.
+*   **Future Scope - Execution:** Connecting the platform to live broker gateway APIs (like Zerodha Kite) to allow users to execute trades directly from the dashboard.
+
+--------------------------------------------------
+## SLIDE 15: Q&A
+**Title:** Thank You
+*   **Developer:** Karan Veer Singh (B.Tech CSE)
 *   **Repository:** [github.com/karanveersingh05/MutualFundsAnalytics](https://github.com/karanveersingh05/MutualFundsAnalytics)
 *   **LinkedIn:** [linkedin.com/in/karanveersingh05](https://www.linkedin.com/in/karanveersingh05/)
 *   **Open for Questions.**
