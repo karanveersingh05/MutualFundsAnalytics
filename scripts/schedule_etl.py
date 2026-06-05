@@ -2,7 +2,6 @@
 schedule_etl.py
 Schedules the ETL pipeline to run every weekday at 8:00 PM.
 Usage: python schedule_etl.py (Keep terminal open)
-Alternatively, use the schedule_task.bat for Windows Task Scheduler.
 """
 import time
 import subprocess
