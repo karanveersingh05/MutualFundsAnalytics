@@ -99,7 +99,12 @@ data = load_data()
 
 # --- Sidebar Navigation ---
 st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/e/eb/Apple_logo_black.svg", width=40) # Aesthetic placeholder
-st.sidebar.title("Bluestock MF")
+st.sidebar.markdown("""
+<div style='margin-bottom: 20px;'>
+    <h2 style='margin-bottom: 8px; line-height: 1.2;'>BlueStock<br>Mutual Funds<br>Analytics</h2>
+    <span style='font-size: 0.85rem; color: #86868B;'>Made By <a href='https://www.linkedin.com/in/karanveersingh05/' target='_blank' style='color: #007AFF; text-decoration: none; font-weight: 500;'>Karan Veer Singh</a></span>
+</div>
+""", unsafe_allow_html=True)
 st.sidebar.markdown("---")
 page = st.sidebar.radio("Navigation", 
     ["Industry Overview", "Fund Performance", "Investor Analytics", "SIP Trends"]
