@@ -1,138 +1,136 @@
-# Bluestock Mutual Funds Analytics: Final Project Report
+# Final Year Project Report: Mutual Fund Analytics Platform
+**Domain:** Financial Technology / Data Engineering  
+**Prepared By:** Karan Veer Singh (B.Tech CSE)  
+**Company Sponsored:** Bluestock Fintech Pvt. Ltd.  
+**LinkedIn:** [linkedin.com/in/karanveersingh05](https://www.linkedin.com/in/karanveersingh05/)  
+**GitHub:** [github.com/karanveersingh05/MutualFundsAnalytics](https://github.com/karanveersingh05/MutualFundsAnalytics)  
 
-**Author:** Karan Veer Singh  
-**LinkedIn:** [https://www.linkedin.com/in/karanveersingh05/](https://www.linkedin.com/in/karanveersingh05/)  
-**GitHub Repository:** [https://github.com/karanveersingh05/MutualFundsAnalytics](https://github.com/karanveersingh05/MutualFundsAnalytics)  
+***
 
----
+## 1. Project Overview & Objective
+Bluestock Fintech is a financial technology company focused on democratising investment analytics for retail and institutional investors in India. This capstone project constitutes the design, development, and deployment of a full-stack Mutual Fund Analytics Platform. 
 
-## 1. Executive Summary
-The Bluestock Mutual Funds Analytics Platform is a robust, end-to-end financial data engineering and quantitative modeling project. Designed to serve as institutional-grade infrastructure for retail investors and analysts, the platform completely automates the extraction, transformation, and loading (ETL) of Mutual Fund data. Beyond basic reporting, it implements advanced financial mathematics - including Modern Portfolio Theory, Monte Carlo projections, and behavioral cohort analysis - presenting the insights through a premium, interactive Streamlit web application and automated HTML email reports.
+The primary objective was to build an end-to-end data engineering pipeline that ingests publicly available data from AMFI India, transforms it through a robust ETL (Extract, Transform, Load) architecture, stores it in a relational database, and presents predictive and historical insights via an interactive dashboard.
 
-## 2. Project Objectives
-The core objectives of the Capstone project were:
-1.  **Data Unification:** To ingest fragmented CSV datasets and live AMFI API data into a centralized, query-optimized SQLite relational database.
-2.  **Performance Analytics:** To calculate advanced risk-adjusted metrics such as Alpha, Beta, Sharpe Ratio, Sortino Ratio, and Maximum Drawdowns, surpassing standard CAGR reporting.
-3.  **Behavioral Insights:** To analyze investor transactions, measure demographic spread, and flag accounts at risk of abandoning Systematic Investment Plans (SIPs).
-4.  **Automation & Delivery:** To build a completely automated "zero-touch" pipeline that schedules itself, runs analytical engines, builds web dashboards, and dispatches performance newsletters.
+### 1.1 Business Context
+The Indian mutual fund industry manages over Rs. 81 lakh crore in AUM across 26.12 crore investor folios. With monthly Systematic Investment Plan (SIP) inflows crossing Rs. 31,002 crore, there is a critical need for programmatic tracking of NAV movements, AUM growth trends, risk-adjusted returns, and demographic investment behaviours.
 
-## 3. Technology Stack & Architecture
+## 2. Problem Statement
+Despite the massive growth of India's mutual fund industry, retail investors lack unified data platforms. This project directly solves five major industry problems:
+1.  **Data Fragmentation:** NAV, AUM, and SIP data are scattered across APIs and PDF reports.
+2.  **Performance Comparison Gap:** Retail investors lack access to calculated risk metrics like the Sharpe Ratio, Alpha, Beta, and Maximum Drawdowns.
+3.  **No Benchmark Tracking:** Difficulty in comparing active funds against Nifty 50 or BSE SmallCap indices.
+4.  **Investor Behaviour Blind Spots:** Lack of demographic visibility regarding SIP churn and retention.
+5.  **Static Reporting:** Replacing slow, PDF-based monthly reports with live, self-service dashboards.
 
-The project relies entirely on a modern, Python-centric technology stack to guarantee cross-platform compatibility and maintainability.
+## 3. Data Sources & Schema Design
+The project utilizes 10 core datasets, capturing 40 real mutual fund schemes, covering 87,000+ rows of transaction data and 4.5 years of NAV history. Data is strictly sourced from public APIs (AMFI India, mfapi.in, NSE/BSE).
 
-*   **Data Processing:** Pandas, NumPy
-*   **Database:** SQLite3 (Star Schema)
-*   **Quantitative Modeling:** SciPy, Statsmodels
-*   **Visualization:** Plotly Express, Seaborn, Matplotlib
-*   **Frontend Presentation:** Streamlit
-*   **Automation:** Built-in OS Task Schedulers, Python `schedule` library, `smtplib`
-
-### 3.1 Pipeline Architecture
-
-```mermaid
-graph TD
-    subgraph Data Sources
-        A[Historical CSVs]
-        B[AMFI Live API]
-    end
-    
-    subgraph ETL Engine
-        C(Data Ingestion & Merging)
-        D(Cleaning & Forward-Filling)
-    end
-    
-    subgraph Data Warehouse
-        E[(SQLite Star Schema)]
-    end
-    
-    subgraph Analytics Modules
-        F(Risk/Return Metrics)
-        G(Cohort & Tracking Error)
-        H(Monte Carlo / Markowitz)
-    end
-    
-    subgraph Presentation Layer
-        I[Streamlit Web App]
-        J[Static Chart Artifacts]
-        K[HTML Email Newsletter]
-    end
-
-    A --> C
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-    E --> G
-    E --> H
-    F --> I
-    G --> I
-    H --> I
-    F --> K
-```
-
-## 4. Data Modeling and ETL Pipeline
-The foundation of the project is the automated ETL pipeline orchestrated by `run_pipeline.py`. 
-
-### 4.1 Data Cleaning & Imputation
-Financial data is notoriously messy due to non-trading days (weekends, public holidays). A critical data engineering challenge solved in this project was the implementation of a full date-range reindexing coupled with forward-fill (`ffill()`) algorithms. This ensures that daily compounding calculations and volatility metrics are not skewed by artificial gaps in the time-series data. Furthermore, expense ratios exceeding regulatory caps were algorithmically clipped to maintain data integrity.
-
-### 4.2 Database Design
-The transformed data is loaded into a local SQLite database utilizing a Star Schema framework. 
-*   **Fact Tables:** `fact_nav`, `fact_transactions`, `fact_performance`
-*   **Dimension Tables:** `dim_fund`, `dim_date`
+### 3.1 Relational Database Design (Star Schema)
+To ensure analytical query performance, the cleaned data is loaded into a local SQLite database utilizing a classic Star Schema.
 
 ```mermaid
 erDiagram
-    DIM_FUND ||--o{ FACT_NAV : contains
-    DIM_FUND ||--o{ FACT_TRANSACTIONS : processes
+    DIM_FUND ||--o{ FACT_NAV : "tracks daily"
+    DIM_FUND ||--o{ FACT_TRANSACTIONS : "receives"
+    DIM_FUND ||--o{ FACT_PERFORMANCE : "evaluates"
+    DIM_DATE ||--o{ FACT_NAV : "maps to"
+    
     DIM_FUND {
         int amfi_code PK
-        string scheme_name
+        string fund_house
         string category
+        float expense_ratio
+    }
+    DIM_DATE {
+        date date_id PK
+        int year
+        int quarter
+        boolean is_weekday
     }
     FACT_NAV {
+        int nav_id PK
         int amfi_code FK
-        date date
+        date nav_date FK
         float nav
+        float daily_return_pct
     }
     FACT_TRANSACTIONS {
+        int tx_id PK
         string investor_id
         int amfi_code FK
         float amount_inr
+        string type
     }
 ```
 
-## 5. Core Analytics: Risk and Return
-Traditional analytics rely heavily on absolute returns, which mask the volatility endured by the investor. This platform computes:
-*   **Sharpe Ratio:** Evaluates the return earned in excess of the risk-free rate per unit of volatility.
-*   **Maximum Drawdown:** Stress-tests the historical data to find the largest peak-to-trough drop, identifying downside risk.
-*   **Bluestock Composite Score:** A proprietary 0-100 scoring system that ranks funds by penalizing high expense ratios and deep drawdowns while rewarding high Sharpe ratios.
+## 4. System Architecture & ETL Pipeline
+The system mirrors real-world fintech pipelines utilized by brokerages. 
 
-## 6. Advanced Analytical Modules
-Moving beyond basic metrics, the platform explores complex financial and behavioral structures.
+```mermaid
+graph TD
+    subgraph Layer 1: Data Extraction
+        A[AMFI Historical CSVs] --> C
+        B[mfapi.in Live JSON API] --> C
+    end
+    
+    subgraph Layer 2: Transformation Pandas
+        C(Data Ingestion Module) --> D(Data Cleaning)
+        D -->|Forward-Fill Weekends| E(Date Normalization)
+        E -->|Outlier Clipping| F(Data Merging)
+    end
+    
+    subgraph Layer 3: SQLite Warehouse
+        F --> G[(Bluestock Star Schema DB)]
+    end
+    
+    subgraph Layer 4: Analytics & Modeling
+        G --> H(Performance & Risk Engine)
+        G --> I(Advanced Quant Models)
+    end
+    
+    subgraph Layer 5: Delivery & Presentation
+        H --> J[Streamlit Web App]
+        I --> J
+        H --> K[Automated HTML Emails]
+    end
+```
 
-*   **Tracking Error:** Computes how closely index funds and large-cap active funds track the NIFTY 100 benchmark, identifying hidden active management risk.
-*   **Cohort Analysis:** Groups retail investors by their initial year of transaction to calculate lifetime value and average ticket sizes over time.
-*   **SIP Continuity Flagging:** An algorithmic scan of transaction histories that flags investors whose inter-transaction gaps exceed 35 days, identifying them as highly likely to default on their SIPs.
-*   **Herfindahl-Hirschman Index (HHI):** Applies macroeconomic concentration mathematics to portfolio holdings to flag funds that are dangerously over-exposed to a few specific stocks.
+## 5. Core Analytics & Exploratory Data Analysis (EDA)
+The project computed highly complex financial mathematics rather than relying on absolute returns:
+*   **Risk Metrics:** Computed the Sharpe Ratio (return vs volatility), Sortino Ratio (downside risk), Alpha (manager skill), Beta (market sensitivity), and Maximum Drawdown.
+*   **EDA Findings:** 
+    *   Identified SBI Mutual Fund's dominance at Rs. 12.5 Lakh Crore AUM.
+    *   Mapped geographic SIP distributions, comparing Tier 30 vs Beyond 30 (B30) city contributions.
+    *   Plotted a 4.5-year NAV trend highlighting COVID recoveries and 2024 market corrections.
 
-## 7. Bonus Implementations
-The project successfully implemented all five extended bonus challenges, significantly elevating the technical complexity of the delivery.
+## 6. Advanced Quantitative Modeling (Bonus Implementations)
+As a B.Tech CSE student, I went significantly beyond the base requirements of the Capstone, implementing all 5 Bonus Challenges. These modules represent the "Advanced Analytics" wing of the platform:
 
-### 7.1 Automated Daemon Scheduling (B1)
-A Python-native scheduling script (`schedule_etl.py`) acts as a background daemon, automatically triggering the entire ETL extraction and analytical recompilation every weekday evening.
+### 6.1 Interactive Streamlit Web Application
+Instead of a static Power BI file, I developed a full-stack, 7-page interactive web application using **Streamlit**. It features real-time Plotly charts, dynamic filtering, an Apple-inspired minimalist UI, and live database querying.
 
-### 7.2 Interactive Streamlit Dashboard (B2)
-A professional, modern web application replaces standard BI tools. Built with a minimalist, high-contrast aesthetic, the dashboard offers 7 specialized pages mapping Macro Industry Trends, Demographics, and real-time Fund filtering using interactive Plotly charts.
+### 6.2 Monte Carlo Stochastic Forecasting
+I engineered a predictive simulation module. Using **Geometric Brownian Motion (GBM)**, the Python engine extracts historical drift and volatility for top funds and simulates 1,000 unique randomized market paths over a 5-year future horizon, rendering 5th, 50th, and 95th percentile uncertainty bands.
 
-### 7.3 Monte Carlo NAV Simulations (B3)
-A stochastic simulation engine (`monte_carlo_simulation.py`) extracts historical drift and volatility for top bluechip funds, executing 1,000 randomized Geometric Brownian Motion paths over a 5-year future horizon to generate visual uncertainty bands (5th, 50th, and 95th percentiles).
+### 6.3 Markowitz Efficient Frontier (Modern Portfolio Theory)
+I built a mathematical portfolio optimization engine. The script runs 10,000 randomized weight allocation combinations across a basket of diverse funds. By mapping Expected Return against Expected Risk, the algorithm programmatically discovers the exact fund weighting required for the **Maximum Sharpe Ratio Portfolio**.
 
-### 7.4 Markowitz Efficient Frontier (B4)
-Applying Modern Portfolio Theory (`markowitz_optimization.py`), the pipeline simulates 10,000 random weight combinations across a diverse 5-fund basket. It programmatically identifies the precise percentage allocations required to construct the Maximum Sharpe Ratio portfolio and the Minimum Volatility portfolio.
+### 6.4 Automated Daemon Scheduling
+The entire ETL and analytics pipeline is completely "zero-touch". I wrote a Python background daemon (`schedule_etl.py`) that acts as a cron job, automatically triggering the pipeline every weekday evening to ingest fresh AMFI data.
 
-### 7.5 Automated HTML Email Reporting (B5)
-An integrated `smtplib` module extracts the top 5 highest-scoring funds of the week, structures them into a cleanly styled HTML template, and utilizes SMTP protocols to broadcast a weekly performance newsletter directly to stakeholders.
+### 6.5 Automated HTML Email Reporting
+I integrated Python's `smtplib` to generate dynamic HTML performance newsletters. The script parses the database for the Top 5 highest-scoring funds of the week, builds a CSS-styled HTML template, and silently broadcasts the report via SMTP to stakeholders.
+
+## 7. Technical Stack Details
+The project was built utilizing a strict, modern open-source stack:
+*   **Core Language:** Python 3.10+
+*   **Data Engineering:** Pandas, NumPy
+*   **Database:** SQLite3, SQLAlchemy ORM
+*   **Quantitative Math:** SciPy, Statsmodels
+*   **Visualization & Frontend:** Streamlit, Plotly Express, Matplotlib, Seaborn
+*   **Automation:** Python Schedule, SMTPLib
+*   **Version Control:** Git, GitHub
 
 ## 8. Conclusion
-The Bluestock Mutual Funds Analytics project stands as a testament to the power of full-stack data engineering. By bridging the gap between raw web-scraped data and advanced stochastic financial modeling, the platform successfully demonstrates how automation and clean UI design can democratize institutional-grade financial analysis. The highly modular architecture ensures that future expansions - such as live execution gateways or predictive machine learning models - can be integrated seamlessly.
+The Bluestock Mutual Funds Analytics Platform successfully bridges the gap between raw web-scraped financial data and advanced stochastic financial modeling. By executing a complex, fully automated ETL pipeline and deploying predictive algorithms like Monte Carlo and Markowitz Optimizations, this final year project proves the viability of using Python to democratize institutional-grade financial analytics for retail users.
