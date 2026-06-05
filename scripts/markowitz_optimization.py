@@ -1,12 +1,19 @@
+"""
+markowitz_optimization.py
+Computes the Markowitz Efficient Frontier for a diverse 5-fund portfolio.
+"""
 import pandas as pd
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # Non-interactive backend for pipeline execution
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
 
-# Paths
-data_dir = Path('data/processed')
-charts_dir = Path('reports/charts')
+# Paths anchored to project root, not CWD
+BASE_DIR = Path(__file__).parent.parent
+data_dir = BASE_DIR / 'data' / 'processed'
+charts_dir = BASE_DIR / 'reports' / 'charts'
 charts_dir.mkdir(parents=True, exist_ok=True)
 
 nav_df = pd.read_csv(data_dir / '02_nav_history_clean.csv')

@@ -1,16 +1,19 @@
+"""
+monte_carlo_simulation.py
+Simulates 5-year NAV projections for selected funds using Geometric Brownian Motion.
+"""
 import pandas as pd
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # Non-interactive backend for pipeline execution
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
 
-# Set visualization style
-sns.set_theme(style="whitegrid")
-plt.rcParams['figure.figsize'] = (12, 6)
-
-# Define paths
-data_dir = Path('data/processed')
-charts_dir = Path('reports/charts')
+# Paths anchored to project root, not CWD
+BASE_DIR = Path(__file__).parent.parent
+data_dir = BASE_DIR / 'data' / 'processed'
+charts_dir = BASE_DIR / 'reports' / 'charts'
 charts_dir.mkdir(parents=True, exist_ok=True)
 
 # Load clean NAV history and Fund Master

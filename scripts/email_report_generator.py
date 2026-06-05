@@ -1,3 +1,8 @@
+"""
+email_report_generator.py
+Generates and sends the weekly HTML performance report via Gmail SMTP.
+Can be triggered from run_pipeline.py or directly from the Streamlit app.
+"""
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -6,9 +11,10 @@ from pathlib import Path
 import os
 import datetime
 
-# Setup paths
-data_dir = Path('data/processed')
-reports_dir = Path('reports')
+# Paths anchored to project root, not CWD
+BASE_DIR = Path(__file__).parent.parent
+data_dir = BASE_DIR / 'data' / 'processed'
+reports_dir = BASE_DIR / 'reports'
 reports_dir.mkdir(parents=True, exist_ok=True)
 
 def generate_html_report():
