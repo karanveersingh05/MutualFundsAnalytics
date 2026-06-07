@@ -130,7 +130,7 @@ page = st.sidebar.radio("Navigation", [
     "About Project"
 ])
 st.sidebar.markdown("---")
-st.sidebar.caption("v1.7 | Bluestock MF Capstone")
+st.sidebar.caption("v1.0 | Bluestock MF Capstone")
 
 if not data:
     st.stop()
