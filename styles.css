@@ -1,4 +1,3 @@
-/* Mutual Fund Analytics — responsive project showcase */
 :root {
   color-scheme: dark;
   --bg: #101510;
@@ -287,4 +286,78 @@ h1 em, h2 em { color: var(--green); font-style: normal; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* FIX: Prevent unwanted horizontal scrolling */
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+*, 
+*::before, 
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+video,
+canvas,
+iframe {
+  max-width: 100%;
+}
+
+svg {
+  max-width: 100%;
+}
+
+.section-shell,
+.site-header,
+.hero,
+.hero-copy,
+.hero-visual,
+.overview-grid,
+.capability-row,
+.pipeline,
+.principles-card,
+.dashboard-preview,
+.site-footer {
+  min-width: 0;
+}
+
+.hero-copy,
+.section-heading,
+.overview-card,
+.capability-row,
+.pipeline-step,
+.principles-copy {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .section-shell,
+  .site-header {
+    width: calc(100% - 36px);
+    max-width: 100%;
+  }
+
+  .hero,
+  .hero-visual,
+  .chart-card,
+  .dashboard-preview,
+  .principles-card {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .performance-chart {
+    max-width: 100%;
+  }
 }
